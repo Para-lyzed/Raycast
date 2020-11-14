@@ -192,5 +192,9 @@ public class Maze {
 			}
 			System.out.println("");
 		}
-	}
+    }
+    
+    public int[][] getMaze() {
+        return framing;
+    }
 }
