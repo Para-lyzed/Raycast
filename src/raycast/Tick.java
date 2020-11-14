@@ -12,5 +12,9 @@
 package raycast;
 
 public class Tick {
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 92f456fd296c1119bc51252304e0cd1dbce86103
 }
