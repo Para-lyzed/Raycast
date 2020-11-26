@@ -12,6 +12,8 @@
 package raycast;
 
 import java.awt.event.*;
+import java.util.Arrays;
+
 import javax.swing.*;
 import javax.swing.Timer;
 
@@ -24,6 +26,15 @@ public class Main extends JFrame implements ActionListener {
     private static boolean left, right, backwards, forwards, turnLeft, turnRight, render = false; //These will be used for the movement, and render will be used to determine whether or not a freame needs to be rendered
     private static Scene scene = new Scene(windowX / 2, windowY / 2); //Calls to the graphics function to draw the scene
     static Timer keyTimer = new Timer(10, new Main()); //This is the clock of the game. It runs a tick every 10ms
+    public static int moveSpeed = cellSize / 20;
+    public static int rotateSpeed = 2;
+    enum Movement {
+        FL, F, FR,
+        L,      R,
+        BL, B, BR
+    }
+    Movement currentMove;
+    public static double[] playerVector = {0, 0}; // {x, y}
     public static void main(String[] args) {
         //Pretty standard graphics setup
         JFrame f = new JFrame();
@@ -32,7 +43,7 @@ public class Main extends JFrame implements ActionListener {
         /* For whatever reason the same settings dont work for all of us, so each of us will get their own setSize bar and they comment it out 
         for everyone else, when you merge a pr dont worry about it, just set it to what works for you and dont touch the commented out ones.
         The 36 is for the window bar at the top */
-        //f.setSize(windowX + 16, windowY + 36); //what works for KYLER
+        // f.setSize(windowX + 16, windowY + 36); //what works for KYLER
         f.setSize(windowX, windowY + 36); // what works for NATHAN
         // f.setSize(windowX + 16, windowY + 36); // what works for MATT
         // f.setSize(windowX + 16, windowY + 36); // what works for DYLAN
@@ -72,31 +83,37 @@ public class Main extends JFrame implements ActionListener {
         //There are safeguards to prevent movement when opposing directions are being held, so that frames aren't unnecessarily rendered
         if (!(left && right)) {
             if (left) {
-                scene.move("left");
-                render = true;
+                currentMove = Movement.L;
             }
             else if (right) {
-                scene.move("right");
-                render = true;
+                currentMove = Movement.R;
             }
         }
         if (!(forwards && backwards)) {
             if (forwards) {
-                scene.move("forwards");
-                render = true;
+                if (currentMove == Movement.L) currentMove = Movement.FL;
+                else if (currentMove == Movement.R) currentMove = Movement.FR;
+                else currentMove = Movement.F;
             }
             else if (backwards) {
-                scene.move("backwards");
-                render = true;
+                if (currentMove == Movement.L) currentMove = Movement.BL;
+                else if (currentMove == Movement.R) currentMove = Movement.BR;
+                else currentMove = Movement.B;
             }
+        }
+        if (currentMove != null) {
+            // System.out.println(Arrays.toString(playerVector) + "\t" + Scene.playerRotation);
+            scene.move(currentMove);
+            currentMove = null;
+            render = true;
         }
         if (!(turnLeft && turnRight)) {
             if (turnLeft) {
-                scene.rotate(-1);
+                scene.rotate(-rotateSpeed);
                 render = true;
             }
             else if (turnRight) {
-                scene.rotate(1);
+                scene.rotate(rotateSpeed);
                 render = true;
             }
         }
